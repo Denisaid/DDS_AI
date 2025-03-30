@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "'@clerk/clerk-sdk-node",
+    "@clerk/clerk-sdk-node": "^5.0.42",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "imagekit": "^5.1.0",
