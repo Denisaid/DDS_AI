@@ -167,7 +167,7 @@ app.get("*", (req, res) => {
 
 app.listen(port, () => {
   connect();
-  console.log("Server running on 3000");
+  console.log(`Server is running on port ${port}`);
 });
 
 module.exports = app;
