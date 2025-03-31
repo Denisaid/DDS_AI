@@ -23,3 +23,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# dist не трябва да бъде игнориран, ако е необходим за production
+# /dist
