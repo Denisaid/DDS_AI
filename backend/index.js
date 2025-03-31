@@ -5,7 +5,7 @@ import url, { fileURLToPath } from "url";
 import ImageKit from "imagekit";
 import mongoose from "mongoose";
 import Chat from "./models/chat.js";
-import UserChats from "./models/userChats.js"
+import UserChats from "./models/userChats.js";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 
 const port = process.env.PORT || 3000;
@@ -101,9 +101,6 @@ app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
     const userChats = await UserChats.find({ userId });
 
     res.status(200).send(userChats[0].chats);
-
-    console.log(userChats);
-    
   } catch (err) {
     console.log(err);
     res.status(500).send("Error fetching userchats!");
