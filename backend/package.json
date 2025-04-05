@@ -3,6 +3,7 @@
   "version": "1.0.0",
     "description": "Backend for AI Chat Starter",
   "main": "index.js",
+  "license": "ISC",
   "type": "module",
   "scripts": {
     "start": "nodemon --env-file .env index.js",
@@ -10,7 +11,6 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
   "description": "",
   "dependencies": {
     "@clerk/clerk-react": "^5.25.6",
