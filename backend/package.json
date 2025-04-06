@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.0.42",
     "cors": "^2.8.5",
