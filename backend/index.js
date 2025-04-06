@@ -1,28 +1,27 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const { ClerkExpressRequireAuth } = require('@clerk/express');
-const path = require('path');
-import mongoose from "mongoose";
+import express from "express";
+import cors from "cors";
+import path from "path";
+import url, { fileURLToPath } from "url";
 import ImageKit from "imagekit";
+import mongoose from "mongoose";
 import Chat from "./models/chat.js";
 import UserChats from "./models/userChats.js"
+import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 
-dotenv.config();
-
+const port = process.env.PORT || 3000;
 const app = express();
 
-// Middleware
-app.use(cors());
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-
-// Clerk Auth middleware
-const clerkMiddleware = ClerkExpressRequireAuth();
-
-// Protected routes
-app.use('/api/protected', clerkMiddleware, (req, res, next) => {
-    // Your protected routes here
-});
 
 const connect = async () => {
   try {
@@ -44,7 +43,7 @@ app.get("/api/upload", (req, res) => {
   res.send(result);
 });
 
-app.post("/api/chats", clerkMiddleware, async (req, res) => {
+app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
   const { text } = req.body;
 
@@ -95,7 +94,7 @@ app.post("/api/chats", clerkMiddleware, async (req, res) => {
   }
 });
 
-app.get("/api/userchats", clerkMiddleware, async (req, res) => {
+app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
 
   try {
@@ -111,7 +110,7 @@ app.get("/api/userchats", clerkMiddleware, async (req, res) => {
   }
 });
 
-app.get("/api/chats/:id", clerkMiddleware, async (req, res) => {
+app.get("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
 
   try {
@@ -124,7 +123,7 @@ app.get("/api/chats/:id", clerkMiddleware, async (req, res) => {
   }
 });
 
-app.put("/api/chats/:id", clerkMiddleware, async (req, res) => {
+app.put("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
 
   const { question, answer, img } = req.body;
@@ -154,18 +153,19 @@ app.put("/api/chats/:id", clerkMiddleware, async (req, res) => {
   }
 });
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../client/dist')));
-
-// Catch all route to serve React app
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(401).send("Unauthenticated!");
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    connect();
-    console.log(`Server is running on port ${PORT}`);
+// PRODUCTION
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
 });
 
-module.exports = app;
+app.listen(port, () => {
+  connect();
+  console.log("Server running on 3000");
+});
