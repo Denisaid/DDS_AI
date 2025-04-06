@@ -1,6 +1,0 @@
-{
-  "verbose": true,
-  "ignore": ["node_modules/*", "client/*"],
-  "watch": ["backend/*"],
-  "ext": "js,json"
-} 
