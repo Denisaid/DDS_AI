@@ -155,22 +155,21 @@ app.use((err, req, res, next) => {
   res.status(401).send("Unauthenticated!");
 });
 
-// PRODUCTION<<<<<<< HEAD
-// app.use(express.static(path.join(__dirname, "../client/dist")));
+app.use(express.static(path.join(__dirname, "../client/dist")));
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
+});
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "dist")));
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.join(__dirname, "dist")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "dist", "index.html"));
-  });
-} else {
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "dist", "index.html"));
+//   });
+// } else {
   
-}
+// }
 app.use(express.static(path.join(__dirname, "dist")));
 
 app.get("*", (req, res) => {
