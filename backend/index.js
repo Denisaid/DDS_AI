@@ -156,20 +156,17 @@ app.use((err, req, res, next) => {
 });
 
 // PRODUCTION
-// app.use(express.static(path.join(__dirname, "../client/dist")));
-
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-// });
-
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "dist")));
-
+if (process.env.NODE_ENV === "production" && process.env.CLIENT_URL) {
+  // За всяка заявка в production, пренасочваме към CLIENT_URL (например https://your-client.vercel.app)
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "dist", "index.html"));
+    res.redirect(process.env.CLIENT_URL);
   });
 } else {
-  
+  // За development, използваме локалната папка
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
+  });
 }
 
 app.listen(port, () => {
