@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from "express";
 import cors from "cors";
 import path from "path";
@@ -53,7 +54,7 @@ app.post("/api/chats", clerkMiddleware(), async (req, res) => {
       userId: userId,
       history: [{ role: "user", parts: [{ text }] }],
     });
-
+    
     const savedChat = await newChat.save();
 
     // CHECK IF THE USERCHATS EXISTS
@@ -98,9 +99,14 @@ app.get("/api/userchats", clerkMiddleware(), async (req, res) => {
   const userId = req.auth.userId;
 
   try {
-    const userChats = await UserChats.find({ userId });
+    const userChats = await UserChats.findOne({ userId });
 
-    res.status(200).send(userChats[0].chats);
+    // If no user chats found, return empty array
+    if (!userChats) {
+      return res.status(200).send([]);
+    }
+
+    res.status(200).send(userChats.chats || []);
   } catch (err) {
     console.log(err);
     res.status(500).send("Error fetching userchats!");
