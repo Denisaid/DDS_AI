@@ -4,6 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "postinstall": "npm explore -p @clerk/express -- npm install --omit=peer",
     "start": "nodemon --env-file .env index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
