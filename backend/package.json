@@ -4,7 +4,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "postinstall": "npm explore -p @clerk/express -- npm install --omit=peer",
     "start": "nodemon --env-file .env index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,14 +12,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@clerk/backend": "^1.29.2",
-    "@clerk/clerk-sdk-node": "^5.1.6",
-    "@clerk/express": "^1.4.9",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "firebase-admin": "^13.3.0",
     "imagekit": "^5.0.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.1",
     "nodemon": "^3.1.4",
     "path": "^0.12.7",
