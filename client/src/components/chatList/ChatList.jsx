@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import './chatList.css';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ChatList = () => {
   const { getToken } = useAuth();
@@ -9,7 +9,11 @@ const ChatList = () => {
   const { isPending, error, data } = useQuery({
     queryKey: ['userChats'],
     queryFn: async () => {
-      const token = await getToken();
+      const token = getToken();
+      
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/userchats`, {
         credentials: 'include',
@@ -19,7 +23,8 @@ const ChatList = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorText = await response.text();
+        throw new Error(`Failed to load chats: ${response.status} ${errorText}`);
       }
 
       return response.json();
@@ -38,7 +43,13 @@ const ChatList = () => {
         {isPending
           ? 'Loading...'
           : error
-          ? 'Error loading chats'
+          ? (
+              <div style={{ color: 'red', padding: '10px' }}>
+                Error loading chats: {error.message}
+              </div>
+            )
+          : data?.length === 0
+          ? 'No chats yet'
           : data?.map((chat) => (
               <Link to={`/dashboard/chats/${chat._id}`} key={chat._id}>
                 {chat.title}

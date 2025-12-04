@@ -1,22 +1,30 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import './dashboardPage.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const DashboardPage = () => {
   const queryClient = useQueryClient();
-
+  const { getToken } = useAuth();
   const navigate = useNavigate();
 
   const mutation = useMutation({
     mutationFn: (text) => {
+      const token = getToken();
       return fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ text }),
-      }).then((res) => res.json());
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to create chat');
+        }
+        return res.json();
+      });
     },
     onSuccess: (id) => {
       // Invalidate and refetch

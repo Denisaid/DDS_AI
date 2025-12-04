@@ -1,29 +1,36 @@
 import { IKContext, IKImage, IKUpload } from 'imagekitio-react';
 import { useRef } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const urlEndpoint = import.meta.env.VITE_IMAGE_KIT_ENDPOINT;
 const publicKey = import.meta.env.VITE_IMAGE_KIT_PUBLIC_KEY;
 
-const authenticator = async () => {
-  try {
-    const response = await fetch('http://localhost:3000/api/upload');
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `Request failed with status ${response.status}: ${errorText}`
-      );
-    }
-
-    const data = await response.json();
-    const { signature, expire, token } = data;
-    return { signature, expire, token };
-  } catch (error) {
-    throw new Error(`Authentication request failed: ${error.message}`);
-  }
-};
-
 const Upload = ({ setImg }) => {
+  const { getToken } = useAuth();
+
+  const authenticator = async () => {
+    try {
+      const token = getToken();
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Request failed with status ${response.status}: ${errorText}`
+        );
+      }
+
+      const data = await response.json();
+      const { signature, expire, token: uploadToken } = data;
+      return { signature, expire, token: uploadToken };
+    } catch (error) {
+      throw new Error(`Authentication request failed: ${error.message}`);
+    }
+  };
   const ikUploadRef = useRef(null);
   const onError = (err) => {
     console.log('Error', err);

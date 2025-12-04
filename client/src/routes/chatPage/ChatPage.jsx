@@ -4,20 +4,29 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 import Markdown from 'react-markdown';
 import { IKImage } from 'imagekitio-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ChatPage = () => {
   const path = useLocation().pathname;
   const chatId = path.split('/').pop();
-
-  
-  
+  const { getToken } = useAuth();
 
   const { isPending, error, data } = useQuery({
     queryKey: ['chat', chatId],
-    queryFn: () =>
-      fetch(`${import.meta.env.VITE_API_URL}/api/chats/${chatId}`, {
+    queryFn: () => {
+      const token = getToken();
+      return fetch(`${import.meta.env.VITE_API_URL}/api/chats/${chatId}`, {
         credentials: 'include',
-      }).then((res) => res.json()),
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch chat');
+        }
+        return res.json();
+      });
+    },
   });
 
    console.log(data);
@@ -31,7 +40,7 @@ const ChatPage = () => {
             : error
             ? 'Something went wrong!'
             : data?.history?.map((message, i) => (
-                <>
+                <div key={i}>
                   {message.img && (
                     <IKImage
                       urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
@@ -47,11 +56,10 @@ const ChatPage = () => {
                     className={
                       message.role === 'user' ? 'message user' : 'message'
                     }
-                    key={i}
                   >
                     <Markdown>{message.parts[0].text}</Markdown>
                   </div>
-                </>
+                </div>
               ))}
 
           {data && <NewPrompt data={data}/>}
